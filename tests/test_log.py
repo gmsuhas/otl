@@ -34,6 +34,14 @@ class LineTests(unittest.TestCase):
         self.assertEqual(event.attributes["rows"], 3)
         self.assertEqual(event.attributes["wait"], 1.5)
 
+    def test_non_numbers_stay_text(self):
+        event = parse_line(
+            "12:00:00.000 sample event loss=nan note=infinity mark=²", 5
+        )
+        self.assertEqual(event.attributes["loss"], "nan")
+        self.assertEqual(event.attributes["note"], "infinity")
+        self.assertEqual(event.attributes["mark"], "²")
+
     def test_a_name_without_a_phase_is_an_event(self):
         event = parse_line("12:00:00.000 cache hit key=user", 1)
         self.assertEqual(event.phase, "event")

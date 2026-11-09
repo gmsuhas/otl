@@ -59,15 +59,26 @@ def parse_attributes(words):
 
 
 def _coerce(value):
-    if value.isdigit() or (value.startswith("-") and value[1:].isdigit()):
-        return int(value)
+    """Keep a number when it is a plain ASCII integer or a finite float.
+
+    Anything else stays text. Unicode digits pass str.isdigit() and then
+    crash int(). nan and inf would become non-standard JSON.
+    """
+    if value.startswith("-"):
+        digits = value[1:]
+        sign = -1
+    else:
+        digits = value
+        sign = 1
+    if digits.isascii() and digits.isdigit():
+        return sign * int(digits)
     try:
         number = float(value)
     except ValueError:
         return value
-    if value.lower() in ("nan", "inf", "-inf", "+inf"):
-        return value
-    return number
+    if number == number and abs(number) != float("inf"):
+        return number
+    return value
 
 
 def parse_line(line, line_no):

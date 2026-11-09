@@ -45,7 +45,7 @@
 </section>
 <section>
 <h2>The same thing as OTLP</h2>
-<p>`otl otlp` writes one ExportTraceServiceRequest. The request is the parent span, the query is the child, and `rows` is a span event. Kind and status are integers, and the timestamps are nanoseconds in decimal strings, which is what the JSON mapping of the spec asks for. A collector on port 4318 can take that body at `/v1/traces`.</p>
+<p>`otl otlp` writes one ExportTraceServiceRequest. The request is the parent span, the query is the child, and `rows` is a span event. Kind and status are integers, the ids are hex, and the timestamps are decimal strings of nanoseconds, which is the shape the JSON mapping asks for. The clock counts from midnight rather than from the unix epoch, so a backend that accepts the body will place the spans in 1970. The file is there to read, not to export.</p>
 </section>
 </main>
 </body>

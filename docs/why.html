@@ -33,7 +33,7 @@
 </section>
 <section>
 <h2>How it helps</h2>
-<p>OpenTelemetry has a lot of surface: APIs, SDKs, protobuf, gRPC, HTTP, three signals, and a collector in the middle. Most of the tutorials start in the middle of that. otl starts from the event. A start and a stop become a span. A span opened inside another becomes a child. A failure becomes a status. Then the same tree is written in the JSON shape the spec describes. The ids and the enums match. The timestamps count from midnight, so they are for reading the file, not for a backend.</p>
+<p>OpenTelemetry has a lot of surface: APIs, SDKs, protobuf, gRPC, HTTP, three signals, and a collector in the middle. Most of the tutorials start in the middle of that. otl starts from the event. A start and a stop become a span. A span opened inside another becomes a child. A failure becomes a status. Then the same tree is written in the JSON shape the spec describes. The ids and the enums match, and a date turns the time of day into unix time, which is the part a backend can place.</p>
 <p>That is small enough to read in an afternoon, and small enough to throw away once the real SDK is the right tool.</p>
 </section>
 <section>

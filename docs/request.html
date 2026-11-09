@@ -45,7 +45,8 @@
 </section>
 <section>
 <h2>The same thing as OTLP</h2>
-<p>`otl otlp` writes one ExportTraceServiceRequest. The request is the parent span, the query is the child, and `rows` is a span event. Kind and status are integers, the ids are hex, and the timestamps are decimal strings of nanoseconds, which is the shape the JSON mapping asks for. The clock counts from midnight rather than from the unix epoch, so a backend that accepts the body will place the spans in 1970. The file is there to read, not to export.</p>
+<p>`otl otlp` writes one ExportTraceServiceRequest. The request is the parent span, the query is the child, and `rows` is a span event. Kind and status are integers, the ids are hex, and the timestamps are decimal strings of nanoseconds, which is the shape the JSON mapping asks for. Pass a date and the time of day is added to midnight UTC of that date, so the same line is 2026-11-08T12:01:02.100Z rather than a span in 1970:</p>
+<pre>python3 -m otl otlp examples/request.log demo 2026-11-08</pre>
 </section>
 </main>
 </body>

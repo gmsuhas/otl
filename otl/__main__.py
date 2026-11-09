@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import datetime
 import sys
 
 from otl.log import LogError, parse_log
@@ -24,8 +25,10 @@ def main(argv=None):
             path, service = _one_file(rest)
             sys.stdout.write(render(build_trace(_read(path))))
         elif command == "otlp":
-            path, service = _one_file(rest)
-            request = export_request(build_trace(_read(path)), service)
+            path, service, day = _otlp_args(rest)
+            request = export_request(
+                build_trace(_read(path)), service, day=day
+            )
             sys.stdout.write(dumps(request))
         elif command == "page":
             title, path, lead = _page_args(rest)
@@ -42,7 +45,7 @@ def _split(args):
     if not args or args[0] in ("-h", "--help"):
         raise LogError(
             "usage: otl trace FILE [SERVICE]\n"
-            "       otl otlp  FILE [SERVICE]\n"
+            "       otl otlp  FILE [SERVICE] [YYYY-MM-DD]\n"
             "       otl page  TITLE FILE [LEAD]"
         )
     return args[0], args[1:]
@@ -53,6 +56,34 @@ def _one_file(args):
         raise LogError("expected a log file and an optional service name")
     service = args[1] if len(args) == 2 else "otl"
     return args[0], service
+
+
+def _otlp_args(args):
+    if not args or len(args) > 3:
+        raise LogError("expected a log file, an optional service, and an optional date")
+    service = "otl"
+    day = None
+    for token in args[1:]:
+        if _looks_like_date(token):
+            if day is not None:
+                raise LogError("expected a single date, YYYY-MM-DD")
+            day = _parse_day(token)
+        elif service != "otl":
+            raise LogError("expected a service name or a date, got %r" % token)
+        else:
+            service = token
+    return args[0], service, day
+
+
+def _looks_like_date(token):
+    return len(token) == 10 and token[4] == "-" and token[7] == "-"
+
+
+def _parse_day(token):
+    try:
+        return datetime.date.fromisoformat(token)
+    except ValueError:
+        raise LogError("expected a date like 2026-11-08, got %r" % token) from None
 
 
 def _page_args(args):

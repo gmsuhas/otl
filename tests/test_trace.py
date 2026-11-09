@@ -1,3 +1,4 @@
+import datetime
 import unittest
 
 from otl.log import parse_log
@@ -75,6 +76,7 @@ class TraceTests(unittest.TestCase):
             "demo",
             trace_id="ab" * 16,
             ids=FixedIds(),
+            day=datetime.date(2026, 11, 8),
         )
         spans = request["resourceSpans"][0]["scopeSpans"][0]["spans"]
         self.assertEqual(spans[0]["traceId"], "ab" * 16)
@@ -85,8 +87,20 @@ class TraceTests(unittest.TestCase):
         self.assertTrue(all(c in "0123456789abcdef" for c in spans[0]["traceId"]))
         self.assertEqual(len(spans[0]["traceId"]), 32)
         self.assertEqual(len(spans[0]["spanId"]), 16)
-        self.assertEqual(spans[0]["startTimeUnixNano"], "43262100000000")
-        self.assertTrue(spans[0]["endTimeUnixNano"].isdigit())
+        start = int(spans[0]["startTimeUnixNano"])
+        end = int(spans[0]["endTimeUnixNano"])
+        self.assertEqual(end - start, 90 * 1_000_000)
+        expected = datetime.datetime(
+            2026, 11, 8, 12, 1, 2, 100000, tzinfo=datetime.timezone.utc
+        )
+        self.assertEqual(start, int(expected.timestamp() * 1_000_000_000))
+        open_span = export_request(
+            build_trace(parse_log("09:15:00.420 notify start channel=email\n")),
+            "demo",
+            day=datetime.date(2026, 11, 8),
+        )
+        exported = open_span["resourceSpans"][0]["scopeSpans"][0]["spans"][0]
+        self.assertNotIn("endTimeUnixNano", exported)
         attributes = spans[0]["attributes"]
         self.assertEqual(attributes[0]["value"]["stringValue"], "GET")
         status = next(item for item in attributes if item["key"] == "status")

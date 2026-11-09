@@ -10,6 +10,7 @@ https://opentelemetry.io/docs/specs/otlp/#json-protobuf-encoding
 
 from __future__ import annotations
 
+import datetime
 import json
 import secrets
 
@@ -26,10 +27,16 @@ def new_span_id():
     return secrets.token_hex(8)
 
 
-def export_request(roots, service_name, trace_id=None, ids=None):
-    """Build an ExportTraceServiceRequest as plain data."""
+def export_request(roots, service_name, trace_id=None, ids=None, day=None):
+    """Build an ExportTraceServiceRequest as plain data.
+
+    `day` is a datetime.date. The clocks in the log are times of day, so the
+    export adds them to midnight UTC of that date. Without it, the spans would
+    sit at the unix epoch.
+    """
     chosen = ids if ids is not None else _Ids()
     trace = trace_id or new_trace_id()
+    origin_ms = _midnight_utc_ms(day)
     spans = []
     for span in walk(roots):
         span_id = chosen.span_id(span)
@@ -39,15 +46,15 @@ def export_request(roots, service_name, trace_id=None, ids=None):
             "spanId": span_id,
             "name": span.name,
             "kind": 1,
-            "startTimeUnixNano": _nano(span.start_ms),
+            "startTimeUnixNano": _nano(origin_ms + span.start_ms),
             "attributes": _attributes(span.attributes),
-            "events": [_event(event, trace) for event in span.events],
+            "events": [_event(event, origin_ms) for event in span.events],
             "status": {"code": span.status_code},
         }
         if parent is not None:
             body["parentSpanId"] = parent
         if span.end_ms is not None:
-            body["endTimeUnixNano"] = _nano(span.end_ms)
+            body["endTimeUnixNano"] = _nano(origin_ms + span.end_ms)
         if span.status_message:
             body["status"]["message"] = span.status_message
         spans.append(body)
@@ -72,6 +79,15 @@ def dumps(request):
     return json.dumps(request, indent=2, ensure_ascii=False) + "\n"
 
 
+def _midnight_utc_ms(day):
+    if day is None:
+        day = datetime.datetime.now(datetime.timezone.utc).date()
+    if isinstance(day, datetime.datetime):
+        day = day.date()
+    midnight = datetime.datetime(day.year, day.month, day.day, tzinfo=datetime.timezone.utc)
+    return int(midnight.timestamp() * 1000)
+
+
 def _nano(clock_ms):
     return str(clock_ms * _NS_PER_MS)
 
@@ -90,9 +106,9 @@ def _value(value):
     return {"stringValue": str(value)}
 
 
-def _event(event, trace_id):
+def _event(event, origin_ms):
     body = {
-        "timeUnixNano": _nano(event.clock_ms),
+        "timeUnixNano": _nano(origin_ms + event.clock_ms),
         "name": event.name,
         "attributes": _attributes(event.attributes),
     }

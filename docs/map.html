@@ -42,7 +42,7 @@
 <h2>The production problems</h2>
 <p>An unclosed span is held by the SDK until the process notices, and the trace stops short of the failure. A checkout that starts a notification and never stops it is the small version.</p>
 <p>A trace reconstructed from logs is what an incident turns into when the spans were never exported. Pairing a start with its stop is the mechanical part of that reading.</p>
-<p>OTLP JSON rejects a trace id that was base64-encoded, and it rejects a span kind written as a name. Both have shipped as bugs in real SDKs. The JSON this tool writes uses hex ids and integer kinds. Its timestamps count from midnight, so the match stops there: a backend would place the spans in 1970.</p>
+<p>OTLP JSON rejects a trace id that was base64-encoded, and it rejects a span kind written as a name. Both have shipped as bugs in real SDKs. The JSON this tool writes uses hex ids and integer kinds, and a date turns each clock into unix time instead of leaving it at the epoch.</p>
 </section>
 </main>
 </body>

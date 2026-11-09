@@ -56,9 +56,11 @@ rather than dropped or given a made-up duration.
 `trace` prints the tree. `otlp` prints one `ExportTraceServiceRequest`: hex
 trace and span ids, integer span kind and status, attributes in the `key` /
 `value` form, and timestamps as decimal strings of nanoseconds. The service
-name defaults to `otl`. Posted to `http://localhost:4318/v1/traces` with
-`Content-Type: application/json`, a collector will accept it. otl does not
-post it for you.
+name defaults to `otl`. A collector accepts the shape at
+`http://localhost:4318/v1/traces` with `Content-Type: application/json`.
+The timestamps are nanoseconds counted from midnight, not from the unix
+epoch, so a backend will place the spans in 1970. That is the same limit
+called out below, not a real export. otl does not post it for you.
 
 ## Demos
 
@@ -107,8 +109,9 @@ span kind or status is an integer, not a name. Shipping the wrong one is a
 known SDK bug, not a style argument
 ([opentelemetry-php #1059](https://github.com/open-telemetry/opentelemetry-php/issues/1059),
 [opentelemetry-go #1924](https://github.com/open-telemetry/opentelemetry-go/issues/1924)).
-`otl otlp` writes the form the spec describes, so the file can be posted to a
-collector on port 4318 without a second translation step.
+`otl otlp` writes the form the spec describes. The ids and the enums are the
+part a collector checks. The timestamps are not: they count from midnight, so
+they are only meaningful next to each other.
 
 ## Tests
 

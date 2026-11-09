@@ -1,0 +1,26 @@
+What sits next to otl
+
+---
+On this account
+
+playyard and otl are the two projects written here. The other public repos are forks, kept even with upstream, and not claimed as original work.
+
+playyard is three text tools: a small interpreter, a day log added up by theme, and one HTML file with the styling inlined. otl is the observability one. It reads a log of starts and stops and writes one trace.
+
+---
+Next to other projects
+
+beam-telemetry/telemetry dispatches an event to whoever attached a handler. It is not OpenTelemetry, and it says so. The BEAM project that does the real job is opentelemetry_telemetry, in front of opentelemetry-erlang.
+
+posit-dev/picotel is a single-file client that sends spans and logs. dimaqq/otlp-json serialises spans the official SDK already built. The Grafana and OpenTelemetry getting-started repos start from an instrumented web app plus a collector.
+
+otl starts earlier than all of those. The input is a line of text. The output is the trace, either indented or as the JSON document a collector accepts.
+
+---
+The production problems
+
+An unclosed span is held by the SDK until the process notices, and the trace stops short of the failure. A checkout that starts a notification and never stops it is the small version.
+
+A trace reconstructed from logs is what an incident turns into when the spans were never exported. Pairing a start with its stop is the mechanical part of that reading.
+
+OTLP JSON rejects a trace id that was base64-encoded, and it rejects a span kind written as a name. Both have shipped as bugs in real SDKs. The JSON this tool writes uses hex ids and integer kinds.

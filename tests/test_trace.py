@@ -68,7 +68,7 @@ class TraceTests(unittest.TestCase):
     def test_otlp_uses_hex_ids_integer_kind_and_string_nanos(self):
         class FixedIds:
             def span_id(self, span):
-                return "aa" if span.parent is None else "bb"
+                return "aa" * 8 if span.parent is None else "bb" * 8
 
         request = export_request(
             build_trace(parse_log(REQUEST)),
@@ -78,9 +78,13 @@ class TraceTests(unittest.TestCase):
         )
         spans = request["resourceSpans"][0]["scopeSpans"][0]["spans"]
         self.assertEqual(spans[0]["traceId"], "ab" * 16)
-        self.assertEqual(spans[0]["spanId"], "aa")
-        self.assertEqual(spans[1]["parentSpanId"], "aa")
+        self.assertEqual(spans[0]["spanId"], "aa" * 8)
+        self.assertEqual(spans[1]["parentSpanId"], "aa" * 8)
         self.assertEqual(spans[0]["kind"], 1)
+        self.assertNotIn("SPAN_KIND", str(request))
+        self.assertTrue(all(c in "0123456789abcdef" for c in spans[0]["traceId"]))
+        self.assertEqual(len(spans[0]["traceId"]), 32)
+        self.assertEqual(len(spans[0]["spanId"]), 16)
         self.assertEqual(spans[0]["startTimeUnixNano"], "43262100000000")
         self.assertTrue(spans[0]["endTimeUnixNano"].isdigit())
         attributes = spans[0]["attributes"]

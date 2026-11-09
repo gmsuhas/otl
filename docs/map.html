@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What sits next to otl</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; font: 18px/1.5 Palatino, "Palatino Linotype", Georgia, serif;
+         color: #1c1915; background: #f6f1e7; }
+  main { max-width: 40rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+  h1 { font-weight: 600; font-size: 2rem; letter-spacing: -0.02em; margin: 0 0 0.4rem; }
+  h2 { font-size: 1.15rem; font-weight: 600; margin: 0 0 0.6rem; }
+  .lead { color: #5c5346; margin-top: 0; }
+  section { margin-top: 1.8rem; }
+  p { margin: 0.4rem 0 0.8rem; }
+  pre { background: #1c1915; color: #f6f1e7; padding: 0.9rem 1rem; overflow: auto;
+        font: 14px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        border-radius: 6px; }
+  a { color: #8a3b12; }
+</style>
+</head>
+<body>
+<main>
+<h1>What sits next to otl</h1>
+<p class="lead">the forks, the neighboring projects, and three production problems</p>
+<section>
+<h2>What sits next to otl</h2>
+</section>
+<section>
+<h2>On this account</h2>
+<p>playyard and otl are the two projects written here. The other public repos are forks, kept even with upstream, and not claimed as original work.</p>
+<p>playyard is three text tools: a small interpreter, a day log added up by theme, and one HTML file with the styling inlined. otl is the observability one. It reads a log of starts and stops and writes one trace.</p>
+</section>
+<section>
+<h2>Next to other projects</h2>
+<p>beam-telemetry/telemetry dispatches an event to whoever attached a handler. It is not OpenTelemetry, and it says so. The BEAM project that does the real job is opentelemetry_telemetry, in front of opentelemetry-erlang.</p>
+<p>posit-dev/picotel is a single-file client that sends spans and logs. dimaqq/otlp-json serialises spans the official SDK already built. The Grafana and OpenTelemetry getting-started repos start from an instrumented web app plus a collector.</p>
+<p>otl starts earlier than all of those. The input is a line of text. The output is the trace, either indented or as the JSON document a collector accepts.</p>
+</section>
+<section>
+<h2>The production problems</h2>
+<p>An unclosed span is held by the SDK until the process notices, and the trace stops short of the failure. A checkout that starts a notification and never stops it is the small version.</p>
+<p>A trace reconstructed from logs is what an incident turns into when the spans were never exported. Pairing a start with its stop is the mechanical part of that reading.</p>
+<p>OTLP JSON rejects a trace id that was base64-encoded, and it rejects a span kind written as a name. Both have shipped as bugs in real SDKs. The JSON this tool writes uses hex ids and integer kinds.</p>
+</section>
+</main>
+</body>
+</html>

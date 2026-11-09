@@ -1,0 +1,27 @@
+A checkout that fails
+
+---
+The log
+
+Payment is declined. The notification is started and never stopped. Checkout itself does finish.
+
+```
+09:15:00.000 checkout start user=ada
+09:15:00.020 pay start provider=card
+09:15:00.400 pay fail error=declined
+09:15:00.420 notify start channel=email
+09:15:00.450 checkout stop status=402
+```
+
+---
+What otl keeps
+
+A `fail` closes the span and marks it as an error. A start with no stop stays in the trace, with the attributes it had, and the text view says so instead of inventing an end time.
+
+```
+09:15:00.000  checkout  450ms
+  09:15:00.020  pay  380ms FAIL declined
+  09:15:00.420  notify  unclosed
+```
+
+The interesting part is the one that did not finish. A duration would have hidden it.

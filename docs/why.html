@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why otl</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; font: 18px/1.5 Palatino, "Palatino Linotype", Georgia, serif;
+         color: #1c1915; background: #f6f1e7; }
+  main { max-width: 40rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+  h1 { font-weight: 600; font-size: 2rem; letter-spacing: -0.02em; margin: 0 0 0.4rem; }
+  h2 { font-size: 1.15rem; font-weight: 600; margin: 0 0 0.6rem; }
+  .lead { color: #5c5346; margin-top: 0; }
+  section { margin-top: 1.8rem; }
+  p { margin: 0.4rem 0 0.8rem; }
+  pre { background: #1c1915; color: #f6f1e7; padding: 0.9rem 1rem; overflow: auto;
+        font: 14px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        border-radius: 6px; }
+  a { color: #8a3b12; }
+</style>
+</head>
+<body>
+<main>
+<h1>Why otl</h1>
+<p class="lead">a trace, written small enough to read</p>
+<section>
+<h2>Why otl</h2>
+</section>
+<section>
+<h2>Who it is for</h2>
+<p>Someone who wants to see what a trace actually is before installing an SDK, a collector, and a backend. The input is a text file. The output is either a few indented lines or one JSON document.</p>
+</section>
+<section>
+<h2>How it helps</h2>
+<p>OpenTelemetry has a lot of surface: APIs, SDKs, protobuf, gRPC, HTTP, three signals, and a collector in the middle. Most of the tutorials start in the middle of that. otl starts from the event. A start and a stop become a span. A span opened inside another becomes a child. A failure becomes a status. Then the same tree is written in the JSON shape a collector already accepts.</p>
+<p>That is small enough to read in an afternoon, and small enough to throw away once the real SDK is the right tool.</p>
+</section>
+<section>
+<h2>What it leaves out</h2>
+<p>No metrics, no log signal, no sampling, no retries, no protobuf. It will not attach to a running Erlang node, and it will not replace the official OpenTelemetry SDK. The beam-telemetry library this started from already points at opentelemetry_telemetry for that job. posit-dev/picotel and dimaqq/otlp-json already send or encode real spans. This one is the picture of the conversion, not another client.</p>
+</section>
+</main>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# One request, written the way a handler would emit it.
+12:01:02.100 web request start method=GET path=/
+12:01:02.110 db query start table=users
+12:01:02.140 db query event rows=1
+12:01:02.160 db query stop
+12:01:02.190 web request stop status=200

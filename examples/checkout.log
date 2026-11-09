@@ -1,0 +1,6 @@
+# Two operations. The second one fails, and a start is left open.
+09:15:00.000 checkout start user=ada
+09:15:00.020 pay start provider=card
+09:15:00.400 pay fail error=declined
+09:15:00.420 notify start channel=email
+09:15:00.450 checkout stop status=402

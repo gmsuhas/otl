@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One request</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; font: 18px/1.5 Palatino, "Palatino Linotype", Georgia, serif;
+         color: #1c1915; background: #f6f1e7; }
+  main { max-width: 40rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+  h1 { font-weight: 600; font-size: 2rem; letter-spacing: -0.02em; margin: 0 0 0.4rem; }
+  h2 { font-size: 1.15rem; font-weight: 600; margin: 0 0 0.6rem; }
+  .lead { color: #5c5346; margin-top: 0; }
+  section { margin-top: 1.8rem; }
+  p { margin: 0.4rem 0 0.8rem; }
+  pre { background: #1c1915; color: #f6f1e7; padding: 0.9rem 1rem; overflow: auto;
+        font: 14px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        border-radius: 6px; }
+  a { color: #8a3b12; }
+</style>
+</head>
+<body>
+<main>
+<h1>One request</h1>
+<p class="lead">a start, a stop, and one thing learned in between</p>
+<section>
+<h2>One request</h2>
+</section>
+<section>
+<h2>The log</h2>
+<p>A handler writes one line when something starts, one when it stops, and a line in between when it learned something.</p>
+<pre>12:01:02.100 web request start method=GET path=/
+12:01:02.110 db query start table=users
+12:01:02.140 db query event rows=1
+12:01:02.160 db query stop
+12:01:02.190 web request stop status=200</pre>
+</section>
+<section>
+<h2>The trace</h2>
+<p>`otl trace` pairs each start with the matching stop. The query sits inside the request because it opened while the request was still open. The row count stays on the query, as a point in time, not as its own span.</p>
+<pre>12:01:02.100  web request  90ms
+  12:01:02.110  db query  50ms
+    12:01:02.140  . db query  rows=1</pre>
+</section>
+<section>
+<h2>The same thing as OTLP</h2>
+<p>`otl otlp` writes one ExportTraceServiceRequest. The request is the parent span, the query is the child, and `rows` is a span event. Kind and status are integers, and the timestamps are nanoseconds in decimal strings, which is what the JSON mapping of the spec asks for. A collector on port 4318 can take that body at `/v1/traces`.</p>
+</section>
+</main>
+</body>
+</html>

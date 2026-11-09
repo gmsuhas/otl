@@ -1,0 +1,30 @@
+One request
+
+---
+The log
+
+A handler writes one line when something starts, one when it stops, and a line in between when it learned something.
+
+```
+12:01:02.100 web request start method=GET path=/
+12:01:02.110 db query start table=users
+12:01:02.140 db query event rows=1
+12:01:02.160 db query stop
+12:01:02.190 web request stop status=200
+```
+
+---
+The trace
+
+`otl trace` pairs each start with the matching stop. The query sits inside the request because it opened while the request was still open. The row count stays on the query, as a point in time, not as its own span.
+
+```
+12:01:02.100  web request  90ms
+  12:01:02.110  db query  50ms
+    12:01:02.140  . db query  rows=1
+```
+
+---
+The same thing as OTLP
+
+`otl otlp` writes one ExportTraceServiceRequest. The request is the parent span, the query is the child, and `rows` is a span event. Kind and status are integers, and the timestamps are nanoseconds in decimal strings, which is what the JSON mapping of the spec asks for. A collector on port 4318 can take that body at `/v1/traces`.

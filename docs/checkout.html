@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A checkout that fails</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; font: 18px/1.5 Palatino, "Palatino Linotype", Georgia, serif;
+         color: #1c1915; background: #f6f1e7; }
+  main { max-width: 40rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+  h1 { font-weight: 600; font-size: 2rem; letter-spacing: -0.02em; margin: 0 0 0.4rem; }
+  h2 { font-size: 1.15rem; font-weight: 600; margin: 0 0 0.6rem; }
+  .lead { color: #5c5346; margin-top: 0; }
+  section { margin-top: 1.8rem; }
+  p { margin: 0.4rem 0 0.8rem; }
+  pre { background: #1c1915; color: #f6f1e7; padding: 0.9rem 1rem; overflow: auto;
+        font: 14px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        border-radius: 6px; }
+  a { color: #8a3b12; }
+</style>
+</head>
+<body>
+<main>
+<h1>A checkout that fails</h1>
+<p class="lead">an error, and a span that never closed</p>
+<section>
+<h2>A checkout that fails</h2>
+</section>
+<section>
+<h2>The log</h2>
+<p>Payment is declined. The notification is started and never stopped. Checkout itself does finish.</p>
+<pre>09:15:00.000 checkout start user=ada
+09:15:00.020 pay start provider=card
+09:15:00.400 pay fail error=declined
+09:15:00.420 notify start channel=email
+09:15:00.450 checkout stop status=402</pre>
+</section>
+<section>
+<h2>What otl keeps</h2>
+<p>A `fail` closes the span and marks it as an error. A start with no stop stays in the trace, with the attributes it had, and the text view says so instead of inventing an end time.</p>
+<pre>09:15:00.000  checkout  450ms
+  09:15:00.020  pay  380ms FAIL declined
+  09:15:00.420  notify  unclosed</pre>
+<p>The interesting part is the one that did not finish. A duration would have hidden it.</p>
+</section>
+</main>
+</body>
+</html>

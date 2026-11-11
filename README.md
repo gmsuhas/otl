@@ -1,11 +1,17 @@
 # otl
 
-A plain-text event log, turned into one trace.
+A text log becomes one trace, so you can see the request that broke.
 
-Nothing to install beyond Python 3.9. No SDK, no collector, no backend. The
-point is to see the conversion itself: a start and a stop become a span, a
-span opened inside another becomes its child, and the same tree can be written
-as the JSON a collector already accepts.
+**TLDR.** Teams buy a tracing backend and still cannot say which request
+failed, because the span that broke was never closed, or the spans were
+never exported. otl is the smallest version of that reading: a start and a
+stop become a span, and a start that never stops stays open instead of
+getting a made-up end time. Nothing to install beyond Python 3.9. No SDK,
+no collector, no backend.
+
+Read this if you are about to spend a quarter picking a vendor and cannot
+yet show one trace of a request that failed. If you already have an SDK in
+production, you do not need it. The opinion is the part worth keeping.
 
 ## Where it comes from
 

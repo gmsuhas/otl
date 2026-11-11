@@ -29,6 +29,11 @@ attributes) and emits one
 [OTLP](https://opentelemetry.io/docs/specs/otlp/#json-protobuf-encoding) trace.
 It does not pretend to be the bridge, and it does not speak protobuf.
 
+[ramp](https://github.com/gmsuhas/ramp) writes the line that comes before
+this one: a flag decision as a `feature_flag` event on the open span, in
+the names the OpenTelemetry registry already records. otl does not decide
+the variant. It places the event.
+
 ## Try it
 
 ```sh
